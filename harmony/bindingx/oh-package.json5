@@ -1,0 +1,12 @@
+{
+  license: '',
+  devDependencies: {},
+  author: '',
+  name: '@react-native-oh-tpl/react-native-bindingx',
+  description: '',
+  main: 'index.ets',
+  version: '1.0.3-0.0.1',
+  dependencies: {
+    "@rnoh/react-native-openharmony": 'file:../react_native_openharmony',
+  },
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@react-native-oh-tpl/react-native-bindingx",
+  "version": "1.0.3-0.0.1",
+  "scripts": {
+    "prepublish": "",
+    "test": "jest"
+  },
+  "main": "lib/ReactBindingXModule.ts",
+  "nativePackage": true,
+  "dependencies": {
+    "bindingx-parser": "^0.0.2"
+  },
+  "devDependencies": {
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "files": [
+    "lib",
+    "harmony"
+  ]
+}

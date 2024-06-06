@@ -1,169 +1,304 @@
+> 模板版本：v0.2.1
 
-![BindingX_250.png](https://img.alicdn.com/tfs/TB1ZG58bb1YBuNjSszeXXablFXa-400-400.png_250x250.jpg "")
+<p align="center">
+  <h1 align="center"> <code>react-native-bindingx</code> </h1>
+</p>
+<p align="center">
+    <a href="https://github.com/alibaba/bindingx">
+        <img src="https://img.shields.io/badge/platforms-android%20|%20ios%20|%20harmony%20-lightgrey.svg" alt="Supported platforms" />
+    </a>
+    <a href="https://github.com/alibaba/bindingx/LICENCE.md>">
+        <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
+        <!-- <img src="https://img.shields.io/badge/license-Apache-blue.svg" alt="License" /> -->
+    </a>
+</p>
 
-# BindingX
-
-[![Join the chat at https://gitter.im/alibaba/bindingx](https://badges.gitter.im/alibaba/bindingx.svg)](https://gitter.im/alibaba/bindingx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-![image | left](https://img.shields.io/badge/PRs-welcome-brightgreen.svg "")
-![image | left](https://img.shields.io/badge/license-Apache--2.0-brightgreen.svg "")
-[![CircleCI](https://circleci.com/gh/alibaba/bindingx/tree/master.svg?style=svg)](https://circleci.com/gh/alibaba/bindingx/tree/master)
-
-* [Read Documentation](https://alibaba.github.io/bindingx/guide/introduce)
-* [中文](https://github.com/alibaba/bindingx/blob/master/README_cn.md)
-
-A new interaction way based on `weex` & `react native` & `html5` .
-
-It provides a way called `expression binding` for handling complex user interaction with views at 60 FPS in React Native and weex :tada: :tada: :tada: .
-
-# Description
-
-The async nature of the js-native bridge in react native and weex incurs an inherent performance penalty. This traditionally prevents JavaScript code from running at high framerates.
-
-We exploreed and implemented a completely new approach to solve the problem. It's main idea is translate the user interaction into expression, and transfer those expressions into native environment. When events occurs (events such as user gesture), all computing task is running on the native side, NO redundant js-bridge calls any more. [Read More](https://alibaba.github.io/bindingx/guide/introduce)
-
-# Glance
-
-Below are some examples which is using bindingx. You can get more examples by running our playground app. Or you can write your own example use our [online playground](https://alibaba.github.io/bindingx/playground), have fun:)
-
-<div align="center">
-    <img style="margin-right:10px" src="https://gw.alicdn.com/tfs/TB1fES5bhGYBuNjy0FnXXX5lpXa-320-563.gif" width = "200" height = "350"/>
-    <img style="margin-right:10px" src="https://gw.alicdn.com/tfs/TB1hOaKbbGYBuNjy0FoXXciBFXa-320-563.gif" width = "200" height = "350"/>
-    <img style="margin-right:10px" src="https://gw.alicdn.com/tfs/TB1LCmUbkyWBuNjy0FpXXassXXa-320-563.gif" width = "200" height = "350"/>
-    <img src="https://gw.alicdn.com/tfs/TB1FRGZbeuSBuNjy1XcXXcYjFXa-320-563.gif" width = "200" height = "350"/>
-</div>
-
-# Demo examples
-  1. pan gesture: [rax](https://jsplayground.taobao.org/raxplayground/34ceb3e5-8927-4e0c-a282-2dd37c9d7b74)  [vue](https://jsplayground.taobao.org/vueplayground/1518d8ac-4403-414f-ba83-616eb8b77dc6)  [rn](https://github.com/alibaba/bindingx/blob/master/react-native/example/src/AnimatedBall.js)
-  2. timing: [rax](https://jsplayground.taobao.org/raxplayground/31211efb-d643-4cd0-8e9e-46b0c29ddd50)  [vue](https://jsplayground.taobao.org/vueplayground/6a016074-225c-461e-bfa7-b73b8336ea3d)  [rn](https://github.com/alibaba/bindingx/blob/master/react-native/example/src/TimingDemo.js)
-  3. scroll: [rax](https://jsplayground.taobao.org/raxplayground/8e3b0234-f218-41e2-b146-db76a00e4096)  [vue](https://jsplayground.taobao.org/vueplayground/0fe39539-f08c-4be0-a589-499be32f6351)  [rn](https://github.com/alibaba/bindingx/blob/master/react-native/example/src/ScrollViewDemo.js)
-  4. orientation: [rax](https://jsplayground.taobao.org/raxplayground/1d3ed4e1-506b-4308-bffa-ecf241a0cc70)  [vue](https://jsplayground.taobao.org/vueplayground/18a9115c-c85b-4a12-a1b2-2b0c401a6eb6)  [rn](https://github.com/alibaba/bindingx/blob/master/react-native/example/src/OrientationDemo.js)
-
-# RealLife examples
-
-  1. Draggable ball: [rax](https://jsplayground.taobao.org/raxplayground/3ec5c8ef-42ff-47fb-9791-4bd7c257b4a7)  [vue](https://jsplayground.taobao.org/vueplayground/de9c7e84-2dc0-4873-8bb0-ce899e64f6ab)
-  2. Swipeable card: [rax](https://jsplayground.taobao.org/raxplayground/7ac0f12b-72e7-4aa5-b398-693ba7b34cd6)  [vue](https://jsplayground.taobao.org/vueplayground/9e4899f6-0fe1-4ffa-86ec-b9c28d22bae9)
-  3. Expandable menu: [rax](https://jsplayground.taobao.org/raxplayground/3f93ffd1-3028-4a9e-9e94-0188973bc44b)  [vue](https://jsplayground.taobao.org/vueplayground/3a388c50-18f8-45d3-b1cf-3f5f0c226c19)
-  4. Slide layout: [rax](https://jsplayground.taobao.org/raxplayground/34e0eae9-ca2d-481f-94b5-239732651eeb)  [vue](https://jsplayground.taobao.org/vueplayground/925802dc-c7c9-4309-b1e1-f83458bb39c4)
-  5. Circle menu: [rax](https://jsplayground.taobao.org/raxplayground/0b2fa94c-b107-422f-8c2c-60481af89d31)  [vue](https://jsplayground.taobao.org/vueplayground/42ffd6b2-9ff6-4161-8224-34779b3af7e6)
-  6. Navigation with Tab: [rax](https://jsplayground.taobao.org/raxplayground/b8583160-f63f-4ab6-9f98-af7a3da283f8)  [vue](https://jsplayground.taobao.org/vueplayground/ccef74e2-00ba-4a30-b8bc-d354b6dfc11e)
-  7. Ripple effect: [rax](https://jsplayground.taobao.org/raxplayground/c4a295f5-bec2-485e-8e05-de80c7274191)  [vue](https://jsplayground.taobao.org/vueplayground/2741ac64-3956-4dc9-ad61-d59b5768d97f)
-
-Note: Weex has two DSL (rax & vue). The link is jumping to JS-Playground. But now our JS-Playground not support React-Native code, so it is jumping to plain source code.
-
-> You can also contribute your examples to us by open an `pull request`. And we will display your example here if it's cool enough.
-
-# Feature
-
-* Complex but fluid user interaction
-* Powerful expression parsing engine
-* Plenty of easing functions
+> [!TIP] [Github 地址](https://github.com/react-native-oh-library/react-native-bindingx)
 
 
-# Installation
+## 安装与使用
 
-### Weex
+请到三方库的 Releases 发布地址查看配套的版本信息：[@react-native-oh-tpl/react-native-bindingx Releases](https://github.com/react-native-bindingx/releases)，并下载适用版本的 tgz 包。
 
-*Prerequisites*: integrate [weex sdk](https://github.com/apache/incubator-weex) to your application.
+进入到工程目录并输入以下命令：
 
-##### Android
+> [!TIP] # 处替换为 tgz 包的路径
 
-We provide two ways to integrate bindingx plugin.
+<!-- tabs:start -->
 
- 1. manual integration
+#### **npm**
 
-    * add dependencies in your application's build.gradle
-
-        ```
-        implementation 'com.alibaba.android:bindingx-core:1.0.1'
-        implementation 'com.alibaba.android:bindingx_weex_plugin:1.0.1'
-        ```
-
-    * register bindingx plugin in code. (`Application#onCreate`, for example)
-
-        ```
-        BindingX.register()
-        ```
-
- 2. use weex plugin loader
-
-    * add dependencies in your application's build.gradle
-
-      ```
-      implementation 'com.alibaba.android:bindingx-core:1.0.1'
-      implementation 'com.alibaba.android:bindingx_weex_plugin:1.0.1'
-      implementation 'org.weex.plugin:plugin-loader:1.0.0'
-      ```
-
-    * register bindingx plugin use plugin loader.
-
-      ```
-      WeexPluginContainer.loadAll(getApplicationContext());
-      ```
-
-#### iOS
-
-add dependencies in your application's `Podfile`
-
-```
-  pod 'BindingX', '~> 1.0.3'
+```bash
+npm install @react-native-oh-tpl/react-native-bindingx@file:#
 ```
 
-module will be registed automatically by WeexPluginLoader, also you can use weex standard module register api `[WXSDKEngine registerModule:@"bindingx" withClass:NSClassFromString(@"EBWXModule")]`.
+#### **yarn**
 
-### React Native
+```bash
+yarn add @react-native-oh-tpl/react-native-bindingx@file:#
+```
 
-*Prerequisites*: integrate [react native](https://facebook.github.io/react-native/) to your application.
+<!-- tabs:end -->
 
-1. install dependencies: `npm install react-native-bindingx --save`;
-2. link library: `react-native link react-native-bindingx`;
+下面的代码展示了这个库的基本使用场景：
 
-#### Android 
+> [!WARNING] 使用时 import 的库名不变。
 
-add `bindingx-core` library to `build.gradle` manually:
+```js
+import ReactBindingXModule from '@react-native-oh-tpl/react-native-bindingx'    
 
-  ```
-  implementation 'com.alibaba.android:bindingx-core:{latest_version}'
-  ```  
 
-1. migrate to [android gradle plugin 3.0](https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration);
-2. use `implementation` instead of `compile` in your build.gradle;
-3. add google repository to your root build.gradle:
+onBind() {
 
-  ```
-  repositories {
-    google()
-    ...
+        let anchor = findNodeHandle(this.refs._anchor);
+        this._token = ReactBindingXModule.bind({
+            eventType: 'orientation',
+            options: {
+                sceneType: '2d' //2d场景会返回x,y分量
+            },
+            props: [
+                {
+                    element: anchor,
+                    property: 'transform.translateX',
+                    expression: 'x+0'
+                },
+                {
+                    element: anchor,
+                    property: 'transform.translateY',
+                    expression: 'y+0'
+                }
+            ]
+        });
+
+        // this._token = token.token;
+    }
+
+    onUnBind() {
+        ReactBindingXModule.unbind({
+            token:this._token,
+            eventType: 'orientation'
+        });
+    }
+
+
+render() {
+        return (
+            <View style={styles.container}>
+
+                <TouchableHighlight
+                    onPress={() => { this.onBind() }}
+                    style={styles.button}
+                >
+                    <Text style={styles.text}>Bind</Text>
+                </TouchableHighlight>
+
+                <TouchableHighlight
+                    onPress={() => { this.onUnBind() }}
+                    style={styles.button}
+                >
+                    <Text style={styles.text}>Unbind</Text>
+                </TouchableHighlight>
+
+                <View style={{
+                    width: 240,
+                    height: 240,
+                    backgroundColor: '#0000ff',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 20,
+                    marginLeft: 80
+                }}>
+                    <Animated.View ref="_anchor"
+                        style={{
+                            width: 100,
+                            height: 100,
+                            backgroundColor: '#00ff00',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <Text style={styles.text}>Target</Text>
+                    </Animated.View>
+                </View>
+
+            </View>
+        );
+    }
+```
+
+## Link
+
+目前鸿蒙暂不支持 AutoLink，所以 Link 步骤需要手动配置。
+
+首先需要使用 DevEco Studio 打开项目里的鸿蒙工程 `harmony`
+
+### 在工程根目录的 `oh-package.json` 添加 overrides 字段
+
+```json
+{
+  ...
+  "overrides": {
+    "@rnoh/react-native-openharmony" : "./react_native_openharmony"
   }
-  ```
-
-# Who is using
-
-| taobao | tmall | youku | fliggy |
-| :--- | :--- | :--- | :--- |
-| ![Taobao](https://img.alicdn.com/tfs/TB1N.thdzuhSKJjSspjXXci8VXa-256-256.png_60x60.jpg "") | ![tmall](https://img.alicdn.com/tps/TB15a7wOFXXXXcgXVXXXXXXXXXX-256-256.png_60x60.jpg "") | ![youku](https://img.alicdn.com/tfs/TB1jjyxhwoQMeJjy1XaXXcSsFXa-256-256.png_60x60.jpg "") | ![fliggy](https://img.alicdn.com/tfs/TB11rPqRXXXXXc_apXXXXXXXXXX-256-256.png_60x60.jpg "") |
-
-
-## Contributing
-* Any PR is welcome
-* Dingding chat group.
-
-
-![Snip20180115_20.png | left | 229x229](https://img.alicdn.com/tfs/TB1suFjbBiE3KVjSZFMXXbQhVXa-300-312.jpg "")
-
-## License
+}
 ```
-Copyright 2018 Alibaba Group
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+### 引入原生端代码
 
-    http://www.apache.org/licenses/LICENSE-2.0
+目前有两种方法：
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+1. 通过 har 包引入（在 IDE 完善相关功能后该方法会被遗弃，目前首选此方法）；
+2. 直接链接源码。
+
+方法一：通过 har 包引入（推荐）
+
+> [!TIP] har 包位于三方库安装路径的 `harmony` 文件夹下。
+
+打开 `entry/oh-package.json5`，添加以下依赖
+
+```json
+"dependencies": {
+    "@rnoh/react-native-openharmony": "file:../react_native_openharmony",
+    "@react-native-oh-tpl/react-native-bindingx": "file:../../node_modules/@react-native-oh-tpl/react-native-bindingx/harmony/bindingx.har"
+  }
 ```
+
+点击右上角的 `sync` 按钮
+
+或者在终端执行：
+
+```bash
+cd entry
+ohpm install
+```
+
+方法二：直接链接源码
+
+> [!TIP] 如需使用直接链接源码，请参考[直接链接源码说明](/zh-cn/link-source-code.md)
+
+### 配置 CMakeLists 和引入 xxxPackge
+
+打开 `entry/src/main/cpp/CMakeLists.txt`，添加：
+
+```diff
+project(rnapp)
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_SKIP_BUILD_RPATH TRUE)
+set(RNOH_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules")
++ set(OH_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
+set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../react-native-harmony/harmony/cpp")
+set(LOG_VERBOSITY_LEVEL 1)
+set(CMAKE_ASM_FLAGS "-Wno-error=unused-command-line-argument -Qunused-arguments")
+set(CMAKE_CXX_FLAGS "-fstack-protector-strong -Wl,-z,relro,-z,now,-z,noexecstack -s -fPIE -pie")
+set(WITH_HITRACE_SYSTRACE 1) # for other CMakeLists.txt files to use
+add_compile_definitions(WITH_HITRACE_SYSTRACE)
+
+add_subdirectory("${RNOH_CPP_DIR}" ./rn)
+
+# RNOH_BEGIN: manual_package_linking_1
+add_subdirectory("../../../../sample_package/src/main/cpp" ./sample-package)
++ add_subdirectory("${OH_MODULES}/@react-native-oh-tpl/react-native-bindingx/src/main/cpp" ./bindingx)
+# RNOH_END: manual_package_linking_1
+
+file(GLOB GENERATED_CPP_FILES "./generated/*.cpp")
+
+add_library(rnoh_app SHARED
+    ${GENERATED_CPP_FILES}
+    "./PackageProvider.cpp"
+    "${RNOH_CPP_DIR}/RNOHAppNapiBridge.cpp"
+)
+target_link_libraries(rnoh_app PUBLIC rnoh)
+
+# RNOH_BEGIN: manual_package_linking_2
+target_link_libraries(rnoh_app PUBLIC rnoh_sample_package)
++ target_link_libraries(rnoh_app PUBLIC rnoh_bindingx)
+# RNOH_END: manual_package_linking_2
+```
+
+打开 `entry/src/main/cpp/PackageProvider.cpp`，添加：
+
+```diff
+#include "RNOH/PackageProvider.h"
+#include "generated/RNOHGeneratedPackage.h"
+#include "SamplePackage.h"
++ #include "ReactBindingXPackage.h"
+
+using namespace rnoh;
+
+std::vector<std::shared_ptr<Package>> PackageProvider::getPackages(Package::Context ctx) {
+    return {
+        std::make_shared<RNOHGeneratedPackage>(ctx),
+        std::make_shared<SamplePackage>(ctx),
++       std::make_shared<ReactBindingXPackage>(ctx),
+    };
+}
+...
+```
+
+
+### 在 ArkTs 侧引入 xxx Package
+
+打开 `entry/src/main/ets/RNPackagesFactory.ts`，添加：
+
+```diff
+...
++ import {ReactBindingXPackage} from '@react-native-oh-tpl/react-native-bindingx/ts';
+
+export function createRNPackages(ctx: RNPackageContext): RNPackage[] {
+  return [
+    new SamplePackage(ctx),
++   new ReactBindingXPackage(ctx)
+  ];
+}
+```
+
+### 运行
+
+点击右上角的 `sync` 按钮
+
+或者在终端执行：
+
+```bash
+cd entry
+ohpm install
+```
+
+然后编译、运行即可。
+
+## 约束与限制
+
+### 兼容性
+
+要使用此库，需要使用正确的 React-Native 和 RNOH 版本。另外，还需要使用配套的 DevEco Studio 和 手机 ROM。
+
+请到三方库相应的 Releases 发布地址查看 Release 配套的版本信息：[@react-native-oh-tpl/react-native-bindingx Releases](https://github.com/react-native-oh-library/react-native-bindingx/releases)
+
+
+本文档内容基于以下版本验证通过：
+
+1. RNOH: 0.72.22; SDK: HarmonyOS NEXT Developer Preview2; IDE: DevEco Studio 5.0.3.29; ROM: 2.0.0.13;
+2. RNOH: 0.72.26; SDK: HarmonyOS NEXT Developer Preview2; IDE: DevEco Studio 5.0.3.29; ROM: 2.0.0.13;
+ 
+
+## API
+
+> [!tip] "Platform"列表示该属性在原三方库上支持的平台。
+
+> [!tip] "HarmonyOS Support"列为 yes 表示 HarmonyOS 平台支持该属性；no 则表示不支持；partially 表示部分支持。使用方法跨平台一致，效果对标 iOS 或 Android 的效果。
+
+| Name              | Description                                                                                                                                                                   | Type            | Required | Platform        | HarmonyOS Support  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | -------- | ----------------| ------------------ |
+| bind              | Build a specific event type of binding instance. When the event is triggered, corresponding expression will be executed and touch off transform in specified element.         | string          | yes      | IOS/Android     |      yes           |
+| unbind            | unbind specified binding instance.                                                                                                                                            | void            | yes      | IOS/Android     |      yes           |
+| unbindAll         | unbind all binding instance                                                                                                                                                   | void            | yes      | IOS/Android     |      yes           |
+| prepare           | launch bind. This method is only useful for pan type binding.                                                                                                                 | void            | yes      | IOS/Android     |      yes           |
+| getComputedStyle  | get styles of specified view.                                                                                                                                                 | Promise<string> | yes      | IOS/Android     |      yes           |
+
+## 遗留问题
+
+
+## 其他
+
+## 开源协议
+
+本项目基于 [TTHE MIT License (MIT)](https://github.com/alibaba/bindingx/blob/master/LICENSE.md) ，请自由地享受和参与开源。
