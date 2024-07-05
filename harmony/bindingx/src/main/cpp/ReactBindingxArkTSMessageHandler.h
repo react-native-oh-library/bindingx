@@ -61,6 +61,7 @@ namespace rnoh {
             std::string color;
             std::string backgroundcolorEval;
             std::vector<std::string> propertyAtr;
+            float px2vp;
         };
         PanActionCallBack *m_panActionCallBack;
         static ReactBindingxArkTSMessageHandler *getInstance();
