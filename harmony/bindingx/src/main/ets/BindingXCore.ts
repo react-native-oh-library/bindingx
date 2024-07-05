@@ -29,7 +29,7 @@ import { IRNViewUpdater } from './IRNViewUpdater';
 import { TimingFunctionsType } from './TimingFunctionsType';
 import { TimingFunctionsTypeHandler } from './TimingFunctionsTypeHandler';
 import { TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-
+import {UIContext} from '@ohos.arkui.UIContext'
 
 export class BindingXCore {
   map: Map<string, string> = new Map();
@@ -64,7 +64,8 @@ export class BindingXCore {
     }
 
     else if (eventType == "pan") {
-      this.ctx.rnInstance.postMessageToCpp("bind", { options: options });
+      let uiContext =  new UIContext();
+      this.ctx.rnInstance.postMessageToCpp("bind", { options: options,px2vp:uiContext.px2vp(1)});
     }
     else if (eventType == "scroll") {
       let that = this;

@@ -230,7 +230,6 @@ namespace rnoh {
                 auto maybeTag = ((ctx.messagePayload["options"])["props"])[0]["element"];
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto viewComponentInstance = std::dynamic_pointer_cast<rnoh::ViewComponentInstance>(componentInstance);
                 auto x = (ctx.messagePayload["data"])["x"].asDouble();
                 auto y = (ctx.messagePayload["data"])["y"].asDouble();
                 std::array<ArkUI_NumberValue, 3> translateValue = {
@@ -239,23 +238,16 @@ namespace rnoh {
                     {.f32 = 0}};
                 ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
                 NativeNodeApi::getInstance()->setAttribute(
-                    viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE,
+                    componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE,
                     &translateItem);
             } else if (eventType == "pan") {
                 auto maybeTag = ((ctx.messagePayload["options"])["props"])[0]["element"];
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto viewComponentInstance = std::dynamic_pointer_cast<rnoh::ViewComponentInstance>(componentInstance);
-                DLOG(INFO) << "ReactBindingXPackage::viewComponentInstance: " << viewComponentInstance;
                 auto anyGestureApi =
                     OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_GESTURE, "ArkUI_NativeGestureAPI_1");
-                if (!panGestureApi) {
-                    panGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi);
-                }
-                if (!panPanGesture) {
-                    panPanGesture = panGestureApi->createPanGesture(1, GESTURE_DIRECTION_ALL, 1);
-                }
-
+                panGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi);
+                panPanGesture = panGestureApi->createPanGesture(1, GESTURE_DIRECTION_ALL, 1);
                 auto onPanActionCallBack = [](ArkUI_GestureEvent *event, void *extraParam) {
                     PanActionCallBack *panActionCallBack = (PanActionCallBack *)extraParam;
                     ArkUI_GestureEventActionType actionType = OH_ArkUI_GestureEvent_GetActionType(event);
@@ -270,8 +262,8 @@ namespace rnoh {
                         panActionCallBack->offsetX = panActionCallBack->positionX + x;
                         panActionCallBack->offsetY = panActionCallBack->positionY + y;
                         std::array<ArkUI_NumberValue, 3> translateValue = {
-                            ArkUI_NumberValue{.f32 = static_cast<float>(panActionCallBack->offsetX)},
-                            {.f32 = static_cast<float>(panActionCallBack->offsetY)},
+                            ArkUI_NumberValue{.f32 = panActionCallBack->offsetX * panActionCallBack->px2vp},
+                            {.f32 = panActionCallBack->offsetY * panActionCallBack->px2vp},
                             {.f32 = 0}};
                         ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
                         NativeNodeApi::getInstance()->setAttribute(
@@ -283,28 +275,23 @@ namespace rnoh {
                     }
                 };
                 PanActionCallBack *panActionCallBack = new PanActionCallBack{
-                    .componentInstance = viewComponentInstance,
+                    .componentInstance = componentInstance,
+                    .px2vp = static_cast<float>(ctx.messagePayload["px2vp"].asDouble())
                 };
                 panGestureApi->setGestureEventTarget(
                     panPanGesture, GESTURE_EVENT_ACTION_ACCEPT | GESTURE_EVENT_ACTION_UPDATE | GESTURE_EVENT_ACTION_END,
                     panActionCallBack, onPanActionCallBack);
-                panGestureApi->addGestureToNode(viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
+                panGestureApi->addGestureToNode(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
                                                 panPanGesture, PARALLEL, NORMAL_GESTURE_MASK);
             } else if (eventType == "scroll") {
                 auto maybeTag = (ctx.messagePayload["options"])["anchor"];
                 DLOG(INFO) << "ReactBindingXPackage::scroll maybeTag: " << maybeTag.asDouble();
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto scrollViewComponentInstance =
-                    std::dynamic_pointer_cast<rnoh::ScrollViewComponentInstance>(componentInstance);
                 auto anyGestureApi =
                     OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_GESTURE, "ArkUI_NativeGestureAPI_1");
-                if (!scrollGestureApi) {
-                    scrollGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi);
-                }
-                if (!scrollPanGesture) {
-                    scrollPanGesture = scrollGestureApi->createPanGesture(1, GESTURE_DIRECTION_VERTICAL, 1);
-                }
+                scrollGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi); 
+                scrollPanGesture = scrollGestureApi->createPanGesture(1, GESTURE_DIRECTION_VERTICAL, 1);
                 folly::dynamic elementViewTag;
                 folly::dynamic elementTextTag;
                 vector<std::string> propertyAtr;
@@ -327,7 +314,7 @@ namespace rnoh {
                         rnInstanceCAPI->findComponentInstanceByTag(elementTextTag.asDouble());
                 }
                 PanActionCallBack *panActionCallBack = new PanActionCallBack{
-                    .componentInstance = scrollViewComponentInstance,
+                    .componentInstance = componentInstance,
                     .elementViewComponentInstance = elementComponentInstance,
                     .elementTextComponentInstance = elementTextComponentInstance,
                     .tag = maybeTag.asDouble(),
@@ -352,13 +339,12 @@ namespace rnoh {
                                                             GESTURE_EVENT_ACTION_END,
                                                         panActionCallBack, onPanActionCallBack);
                 scrollGestureApi->addGestureToNode(
-                    scrollViewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), scrollPanGesture,
+                    componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), scrollPanGesture,
                     PARALLEL, NORMAL_GESTURE_MASK);
             } else if (eventType == "timing") {
                 auto maybeTag = ((ctx.messagePayload["options"])["props"])[0]["element"];
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto viewComponentInstance = std::dynamic_pointer_cast<rnoh::ViewComponentInstance>(componentInstance);
                 auto x = (ctx.messagePayload["data"])["x"].asDouble();
                 auto y = (ctx.messagePayload["data"])["y"].asDouble();
                 DLOG(INFO) << "ReactBindingXPackage::timing x:" << x << " y:" << y;
@@ -377,7 +363,7 @@ namespace rnoh {
                         ArkUI_NumberValue{.f32 = static_cast<float>(x)}, {.f32 = static_cast<float>(y)}, {.f32 = 0}};
                     ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
                     NativeNodeApi::getInstance()->setAttribute(
-                        viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE,
+                        componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE,
                         &translateItem);
                 }
                 vector<std::string> opacityMatchPropertys;
@@ -388,7 +374,7 @@ namespace rnoh {
                         {.f32 = static_cast<float>(ctx.messagePayload["opacity"].asDouble())}};
                     ArkUI_AttributeItem opacityItem = {opacityValue, sizeof(opacityValue) / sizeof(ArkUI_NumberValue)};
                     NativeNodeApi::getInstance()->setAttribute(
-                        viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY,
+                        componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY,
                         &opacityItem);
                 }
             }
@@ -435,17 +421,16 @@ namespace rnoh {
             auto maybeTag = (ctx.messagePayload["element"]).asDouble();
             auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
             auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag);
-            auto viewComponentInstance = std::dynamic_pointer_cast<rnoh::ViewComponentInstance>(componentInstance);
             auto translateItem = NativeNodeApi::getInstance()->getAttribute(
-                viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE);
+                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE);
             auto scaleItem = NativeNodeApi::getInstance()->getAttribute(
-                viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_SCALE);
+                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_SCALE);
             auto roateItem = NativeNodeApi::getInstance()->getAttribute(
-                viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_ROTATE);
+                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_ROTATE);
             auto opacityItem = NativeNodeApi::getInstance()->getAttribute(
-                viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY);
+                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY);
             auto backgroundColorItem = NativeNodeApi::getInstance()->getAttribute(
-                viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_BACKGROUND_COLOR);
+                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_BACKGROUND_COLOR);
             std::string computedStyle = "{translate:" + to_string(translateItem->value[0].f32) +
                                         ",scale:" + to_string(scaleItem->value[0].f32) +
                                         ",roate:" + to_string(roateItem->value[0].f32) +
