@@ -5,12 +5,14 @@
     "prepublish": "",
     "test": "jest"
   },
-  "main": "lib/ReactBindingXModule.ts",
+  "main": "lib/index.js",
   "nativePackage": true,
-  "dependencies": {
-    "bindingx-parser": "^0.0.2"
+  "harmony": {
+    "alias":"react-native-bindingx"
   },
-  "devDependencies": {
+  "dependencies": {
+    "react-native-bindingx": "0.1.2",
+    "bindingx-parser": "^0.0.2"
   },
   "jest": {
     "preset": "react-native"
