@@ -62,12 +62,13 @@ namespace rnoh {
             std::string backgroundcolorEval;
             std::vector<std::string> propertyAtr;
             float px2vp;
+            std::weak_ptr<RNInstance> rnInstance;
         };
         PanActionCallBack *m_panActionCallBack;
         static ReactBindingxArkTSMessageHandler *getInstance();
         float m_scrollY;
         std::map<std::string, std::string> styleMap;
-
+        bool isInterceptPan = true; 
     public:
         void handleArkTSMessage(const Context &ctx) override;
 

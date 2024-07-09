@@ -35,37 +35,35 @@ export class ReactBindingXModule extends TurboModule {
   }
 
   public prepare(options: object) {
-    console.log("ReactBindingXModule prepare success:" + JSON.stringify(options));
     if (!this.mBindingXCore) {
       this.mBindingXCore = new BindingXCore();
     }
+    this.mBindingXCore.handleTouch(options["anchor"],options["eventType"],this.ctx);
   }
 
 
   public bind(options: object): string {
-    this.prepare(options);
+    if (!this.mBindingXCore) {
+      this.mBindingXCore = new BindingXCore();
+    }
     return this.mBindingXCore.bind(options, this.ctx);
   }
 
 
   public unbind(options: object) {
-    console.log("ReactBindingXModule unbind success:" + JSON.stringify(options));
     if(!this.mBindingXCore) return;
     this.mBindingXCore.unbind(options);
   }
 
   public unbindAll() {
-    console.log("ReactBindingXModule unbindAll success");
     if(!this.mBindingXCore) return;
     this.mBindingXCore.unbindAll()
   }
 
   public async getComputedStyle(options: object): Promise<string> {
-    console.log("ReactBindingXModule getComputedStyle success："+JSON.stringify(options));
     this.ctx.rnInstance.postMessageToCpp("getComputedStyle", { element: options });
     return await new Promise( (resolve, reject) => {
       this.ctx.rnInstance.cppEventEmitter.subscribe("style", (value) => {
-        console.log("ReactBindingXModule getComputedStyle subscribe:" + value);
         resolve(JSON.stringify(value));
       })
     });

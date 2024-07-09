@@ -59,7 +59,6 @@ export class BindingXCore {
           this.ctx.rnInstance.postMessageToCpp("bind", { options: options, data: data });
         });
       } catch (error) {
-        console.log('sensor RotationVectorResponse error: ' + error);
       }
     }
 
@@ -133,7 +132,6 @@ export class BindingXCore {
           try {
             sensor.off(sensor.SensorId.ROTATION_VECTOR);
           } catch (error) {
-            console.log('ReactBindingXModule unbind error: ' + error);
           }
         }
         else if (value == "pan" || value == "scroll") {
@@ -433,5 +431,47 @@ export class BindingXCore {
       that.opacity = new Number(value).valueOf();
     })
   }
+
+  handleReceivedTouchFromCpp() {
+    let that = this;
+    this.ctx.rnInstance.cppEventEmitter.subscribe("touch", (value)  => {
+      let json = JSON.stringify(value).split(",")
+      that.ctx.rnInstance.emitDeviceEvent("bindingx:statechange",
+        {
+          deltaX: json[0],
+          deltaY: json[1],
+          token: this.findToken(),
+          state: 'end'
+        }
+      );
+    })
+  }
+
+  handleTouch(anchor: number, eventType: string,ctx: TurboModuleContext){
+    this.ctx = ctx;
+    if(eventType=="pan"){
+      let uiContext = new UIContext();
+      let options= {
+        eventType: eventType,
+        anchor: anchor,
+        px2vp:uiContext.px2vp(1)
+      };
+      this.ctx.rnInstance.postMessageToCpp("prepare", options);
+      this.handleReceivedTouchFromCpp();
+    }
+  }
+
+  findToken():string{
+    let token=""
+     this.map.forEach((value,key)=>{
+        if(value=="pan"){
+           token=key
+        }
+     })
+    return token;
+  }
+
+
+
 }
 

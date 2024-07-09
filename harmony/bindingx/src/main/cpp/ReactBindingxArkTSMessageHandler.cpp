@@ -60,7 +60,6 @@ namespace rnoh {
         float endG = ((endInt >> 8) & 0xff) / 255.0;
         float endB = (endInt & 0xff) / 255.0;
 
-        // convert from sRGB to linear
         startR = pow(startR, 2.2);
         startG = pow(startG, 2.2);
         startB = pow(startB, 2.2);
@@ -68,14 +67,10 @@ namespace rnoh {
         endR = pow(endR, 2.2);
         endG = pow(endG, 2.2);
         endB = pow(endB, 2.2);
-
-        // compute the interpolated color in linear space
         float a = startA + fraction * (endA - startA);
         float r = startR + fraction * (endR - startR);
         float g = startG + fraction * (endG - startG);
         float b = startB + fraction * (endB - startB);
-
-        // convert back to sRGB in the [0..255] range
         a = a * 255.0;
         r = pow(r, 1.0 / 2.2) * 255.0;
         g = pow(g, 1.0 / 2.2) * 255.0;
@@ -93,10 +88,9 @@ namespace rnoh {
 
     std::vector<std::string> split(const std::string &src, const std::string &sep) {
         std::vector<std::string> tokens;
-        int lastPos = 0, // 上次找到的sep的位置
+        int lastPos = 0,
             index, sepLen = sep.length();
         while (-1 != (index = src.find(sep, lastPos))) {
-            // substr(起始位置，字符串长度)
             tokens.push_back(src.substr(lastPos, index - lastPos));
             lastPos = index + sepLen;
         }
@@ -151,8 +145,6 @@ namespace rnoh {
         DLOG(INFO) << "ReactBindingXPackage::scroll getScrollViewMetrics y:" << this->m_scrollY
                   << " scrollY:" << panActionCallBack->scrollY << " angle:" << panActionCallBack->angle
                   << " width:" << scrollViewComponentInstance->getLayoutMetrics().frame.size.width;
-
-
         float translate = this->m_scrollY;
         std::array<ArkUI_NumberValue, 3> translateValue = {ArkUI_NumberValue{.f32 = translate}, {.f32 = 0}, {.f32 = 0}};
         ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
@@ -169,7 +161,6 @@ namespace rnoh {
         }
         panActionCallBack->scrollY = this->m_scrollY;
 
-        // 处理背景色
         std::vector<std::string> backgroundColorMatchPropertys;
         backgroundColorMatchPropertys.push_back("background-color");
         std::vector<std::string> findbackgroundColorAtr =
@@ -222,7 +213,53 @@ namespace rnoh {
         auto rnInstance = ctx.rnInstance.lock();
         if (!rnInstance)
             return;
+        if (ctx.messageName == "prepare") {
+            auto eventType = ctx.messagePayload["eventType"];
+            if (eventType == "pan") {
+                auto maybeTag = ctx.messagePayload["anchor"];
+                auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
+                auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
+                auto anyGestureApi =
+                    OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_GESTURE, "ArkUI_NativeGestureAPI_1");
+                panGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi);
+                panPanGesture =
+                    panGestureApi->createPanGesture(1, GESTURE_DIRECTION_HORIZONTAL | GESTURE_DIRECTION_VERTICAL, 0);
+                auto onPanActionCallBack = [](ArkUI_GestureEvent *event, void *extraParam) {
+                    if(ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan) return;
+                    PanActionCallBack *panActionCallBack = (PanActionCallBack *)extraParam;
+                    ArkUI_GestureEventActionType actionType = OH_ArkUI_GestureEvent_GetActionType(event);
+                    float x = OH_ArkUI_PanGesture_GetOffsetX(event);
+                    float y = OH_ArkUI_PanGesture_GetOffsetY(event);
+                   if (actionType == GESTURE_EVENT_ACTION_UPDATE) {
+                        panActionCallBack->offsetX = panActionCallBack->positionX + x;
+                        panActionCallBack->offsetY = panActionCallBack->positionY + y;
+                        std::array<ArkUI_NumberValue, 3> translateValue = {
+                            ArkUI_NumberValue{.f32 = panActionCallBack->offsetX * panActionCallBack->px2vp},
+                            {.f32 = panActionCallBack->offsetY * panActionCallBack->px2vp},
+                            {.f32 = 0}};
+                        ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
+                        NativeNodeApi::getInstance()->setAttribute(
+                            panActionCallBack->componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
+                            NODE_TRANSLATE, &translateItem);
+                        panActionCallBack->rnInstance.lock()->postMessageToArkTS("touch",  to_string(panActionCallBack->offsetX * panActionCallBack->px2vp)+","+to_string(panActionCallBack->offsetY * panActionCallBack->px2vp));
 
+                    } else if (actionType == GESTURE_EVENT_ACTION_END) {
+                        panActionCallBack->positionX = panActionCallBack->offsetX;
+                        panActionCallBack->positionY = panActionCallBack->offsetY;
+                    }
+                };
+                PanActionCallBack *panActionCallBack =
+                    new PanActionCallBack{.componentInstance = componentInstance,
+                                          .px2vp = static_cast<float>(ctx.messagePayload["px2vp"].asDouble()),
+                                          .rnInstance = rnInstance};
+                panGestureApi->setGestureEventTarget(
+                    panPanGesture, GESTURE_EVENT_ACTION_ACCEPT | GESTURE_EVENT_ACTION_UPDATE | GESTURE_EVENT_ACTION_END,
+                    panActionCallBack, onPanActionCallBack);
+                panGestureApi->addGestureToNode(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
+                                                panPanGesture, PARALLEL, NORMAL_GESTURE_MASK);
+                ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan = true;
+            }
+        }
         if (ctx.messageName == "bind") {
             DLOG(INFO) << "ReactBindingXPackage::messagePayload:" << ctx.messagePayload;
             auto eventType = (ctx.messagePayload["options"])["eventType"];
@@ -241,48 +278,7 @@ namespace rnoh {
                     componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE,
                     &translateItem);
             } else if (eventType == "pan") {
-                auto maybeTag = ((ctx.messagePayload["options"])["props"])[0]["element"];
-                auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
-                auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto anyGestureApi =
-                    OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_GESTURE, "ArkUI_NativeGestureAPI_1");
-                panGestureApi = reinterpret_cast<ArkUI_NativeGestureAPI_1 *>(anyGestureApi);
-                panPanGesture = panGestureApi->createPanGesture(1, GESTURE_DIRECTION_ALL, 1);
-                auto onPanActionCallBack = [](ArkUI_GestureEvent *event, void *extraParam) {
-                    PanActionCallBack *panActionCallBack = (PanActionCallBack *)extraParam;
-                    ArkUI_GestureEventActionType actionType = OH_ArkUI_GestureEvent_GetActionType(event);
-                    DLOG(INFO) << "ReactBindingXPackage::event actionType: " << actionType;
-                    float x = OH_ArkUI_PanGesture_GetOffsetX(event);
-                    float y = OH_ArkUI_PanGesture_GetOffsetY(event);
-                    DLOG(INFO) << "ReactBindingXPackage::event x: " << x << " y:" << y;
-                    DLOG(INFO) << "ReactBindingXPackage::viewComponentInstance1: "
-                              << panActionCallBack->componentInstance;
-                    if (actionType == GESTURE_EVENT_ACTION_UPDATE) {
-                        DLOG(INFO) << "ReactBindingXPackage::event GESTURE_EVENT_ACTION_UPDATE x: " << x << " y:" << y;
-                        panActionCallBack->offsetX = panActionCallBack->positionX + x;
-                        panActionCallBack->offsetY = panActionCallBack->positionY + y;
-                        std::array<ArkUI_NumberValue, 3> translateValue = {
-                            ArkUI_NumberValue{.f32 = panActionCallBack->offsetX * panActionCallBack->px2vp},
-                            {.f32 = panActionCallBack->offsetY * panActionCallBack->px2vp},
-                            {.f32 = 0}};
-                        ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
-                        NativeNodeApi::getInstance()->setAttribute(
-                            panActionCallBack->componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
-                            NODE_TRANSLATE, &translateItem);
-                    } else if (actionType == GESTURE_EVENT_ACTION_END) {
-                        panActionCallBack->positionX = panActionCallBack->offsetX;
-                        panActionCallBack->positionY = panActionCallBack->offsetY;
-                    }
-                };
-                PanActionCallBack *panActionCallBack = new PanActionCallBack{
-                    .componentInstance = componentInstance,
-                    .px2vp = static_cast<float>(ctx.messagePayload["px2vp"].asDouble())
-                };
-                panGestureApi->setGestureEventTarget(
-                    panPanGesture, GESTURE_EVENT_ACTION_ACCEPT | GESTURE_EVENT_ACTION_UPDATE | GESTURE_EVENT_ACTION_END,
-                    panActionCallBack, onPanActionCallBack);
-                panGestureApi->addGestureToNode(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),
-                                                panPanGesture, PARALLEL, NORMAL_GESTURE_MASK);
+                  ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan = false;
             } else if (eventType == "scroll") {
                 auto maybeTag = (ctx.messagePayload["options"])["anchor"];
                 DLOG(INFO) << "ReactBindingXPackage::scroll maybeTag: " << maybeTag.asDouble();
@@ -390,6 +386,7 @@ namespace rnoh {
                     panGestureApi->removeGestureFromNode(
                         viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), panPanGesture);
                 }
+                   ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan = false;
             } else if (eventType == "scroll") {
                 DLOG(INFO) << "ReactBindingXPackage::scroll unbind";
                 auto maybeTag = (ctx.messagePayload["options"])["token"];
