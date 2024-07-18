@@ -271,7 +271,7 @@ namespace rnoh {
                 auto y = (ctx.messagePayload["data"])["y"].asDouble();
                 std::array<ArkUI_NumberValue, 3> translateValue = {
                     ArkUI_NumberValue{.f32 = static_cast<float>(x) * 100},
-                    {.f32 = static_cast<float>(y) * 10},
+                    {.f32 = static_cast<float>(y) * 100},
                     {.f32 = 0}};
                 ArkUI_AttributeItem translateItem = {translateValue.data(), translateValue.size()};
                 NativeNodeApi::getInstance()->setAttribute(
