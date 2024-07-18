@@ -418,21 +418,14 @@ namespace rnoh {
             auto maybeTag = (ctx.messagePayload["element"]).asDouble();
             auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
             auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag);
-            auto translateItem = NativeNodeApi::getInstance()->getAttribute(
-                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE);
-            auto scaleItem = NativeNodeApi::getInstance()->getAttribute(
-                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_SCALE);
-            auto roateItem = NativeNodeApi::getInstance()->getAttribute(
-                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_ROTATE);
-            auto opacityItem = NativeNodeApi::getInstance()->getAttribute(
-                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY);
-            auto backgroundColorItem = NativeNodeApi::getInstance()->getAttribute(
-                componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_BACKGROUND_COLOR);
-            std::string computedStyle = "{translate:" + to_string(translateItem->value[0].f32) +
-                                        ",scale:" + to_string(scaleItem->value[0].f32) +
-                                        ",roate:" + to_string(roateItem->value[0].f32) +
-                                        ",opacity:" + to_string(opacityItem->value[0].f32) +
-                                        ",background-color:" + to_string(backgroundColorItem->value[0].u32) + "}";
+            float translate = NativeNodeApi::getInstance()->getAttribute(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_TRANSLATE)->value[0].f32;
+            float scale = NativeNodeApi::getInstance()->getAttribute(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_SCALE)->value[0].f32;
+            float roate = NativeNodeApi::getInstance()->getAttribute(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_ROTATE)->value[3].f32;
+            float opacity = NativeNodeApi::getInstance()->getAttribute(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), NODE_OPACITY)->value[0].f32;
+            float backgroundColor = NativeNodeApi::getInstance()->getAttribute(componentInstance->getLocalRootArkUINode().getArkUINodeHandle(),NODE_BACKGROUND_COLOR)->value[0].u32;
+            std::string computedStyle = "{translate:" + to_string(translate) + ",scale:" + to_string(scale) +
+                                        ",roate:" + to_string(roate) + ",opacity:" + to_string(opacity) +
+                                        ",background-color:" + to_string(backgroundColor) +"}";
             DLOG(INFO) << "ReactBindingXPackage::getComputedStyle post:" << computedStyle;
             rnInstance->postMessageToArkTS("style", computedStyle);
         }
