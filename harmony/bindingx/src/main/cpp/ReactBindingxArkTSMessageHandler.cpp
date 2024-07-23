@@ -381,23 +381,20 @@ namespace rnoh {
                 auto maybeTag = (ctx.messagePayload["options"])["token"];
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto viewComponentInstance = std::dynamic_pointer_cast<rnoh::ViewComponentInstance>(componentInstance);
                 if (panGestureApi) {
                     panGestureApi->removeGestureFromNode(
-                        viewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), panPanGesture);
+                        componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), panPanGesture);
                 }
-                   ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan = false;
+                ReactBindingxArkTSMessageHandler::getInstance()->isInterceptPan = false;
             } else if (eventType == "scroll") {
                 DLOG(INFO) << "ReactBindingXPackage::scroll unbind";
                 auto maybeTag = (ctx.messagePayload["options"])["token"];
                 DLOG(INFO) << "ReactBindingXPackage::event scroll unbind " << maybeTag.asDouble();
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                auto scrollViewComponentInstance =
-                    std::dynamic_pointer_cast<rnoh::ScrollViewComponentInstance>(componentInstance);
                 if (scrollGestureApi) {
                     scrollGestureApi->removeGestureFromNode(
-                        scrollViewComponentInstance->getLocalRootArkUINode().getArkUINodeHandle(), scrollPanGesture);
+                        componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), scrollPanGesture);
                 }
             }
         } else if (ctx.messageName == "eval") {

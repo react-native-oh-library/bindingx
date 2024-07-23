@@ -159,7 +159,7 @@ export class BindingXCore {
       }
       else if (value == "pan" || value == "scroll") {
         this.map.delete(key);
-        this.ctx.rnInstance.postMessageToCpp("unbind", { options: { eventType: value } });
+        this.ctx.rnInstance.postMessageToCpp("unbind", { options: { eventType: value,token:key } });
       }
       else if (value == "timing") {
         this.map.delete(key);
