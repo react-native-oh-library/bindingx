@@ -381,7 +381,7 @@ namespace rnoh {
                 auto maybeTag = (ctx.messagePayload["options"])["token"];
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                if (panGestureApi) {
+                if (panGestureApi && componentInstance) {
                     panGestureApi->removeGestureFromNode(
                         componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), panPanGesture);
                 }
@@ -392,7 +392,7 @@ namespace rnoh {
                 DLOG(INFO) << "ReactBindingXPackage::event scroll unbind " << maybeTag.asDouble();
                 auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
                 auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(maybeTag.asDouble());
-                if (scrollGestureApi) {
+                if (scrollGestureApi && componentInstance) {
                     scrollGestureApi->removeGestureFromNode(
                         componentInstance->getLocalRootArkUINode().getArkUINodeHandle(), scrollPanGesture);
                 }
