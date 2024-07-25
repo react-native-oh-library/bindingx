@@ -11,7 +11,6 @@
     "alias":"react-native-bindingx"
   },
   "dependencies": {
-    "react-native-bindingx": "0.1.2",
     "bindingx-parser": "^0.0.2"
   },
   "jest": {
