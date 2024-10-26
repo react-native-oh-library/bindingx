@@ -1,6 +1,6 @@
 {
   "name": "@react-native-oh-tpl/react-native-bindingx",
-  "version": "1.0.3-0.0.3",
+  "version": "1.0.3-0.0.4",
   "scripts": {
     "prepublish": "",
     "test": "jest"
@@ -19,5 +19,9 @@
   "files": [
     "lib",
     "harmony"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+     "access": "public"
+  }
 }
