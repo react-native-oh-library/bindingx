@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "react-native-bindingx",
+        "License": "Apache License",
+        "License File": "LICENSE.md",
+        "Version Number": "1.0.3",
+        "Owner" : "xiafeng@huawei.com",
+        "Upstream URL": "https://github.com/alibaba/bindingx",
+        "Description": "Bind actions to effects"
+    }
+]
